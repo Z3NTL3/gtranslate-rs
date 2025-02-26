@@ -1,19 +1,3 @@
-# gtranslate-rs
-Rust bindings for Google Translations
-
-#### Quick start
-Write the following in your Rust project:
-
-> ``cargo add gtranslate``
-
-#### Features
-- No API key requirement
-- Supports timeout
-- Supports the use of a custom [reqwest::Client](https://docs.rs/reqwest/latest/reqwest/struct.Client.html)
-
-
-#### Example
-```rust
 use std::time;
 
 use gtranslate::{
@@ -32,5 +16,3 @@ async fn main() {
     let translated = translator.translate(time::Duration::from_secs(2), opts).await.unwrap();
     println!("translated: {translated}")
 }
-
-```
