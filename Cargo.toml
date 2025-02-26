@@ -1,9 +1,11 @@
 [package]
 name = "gtranslate"
+description = "Rust bindings for Google Translations"
 version = "0.1.0"
 edition = "2021"
 keywords = ["google", "translations", "translator", "bindings"]
-repository = ""
+repository = "https://github.com/Z3NTL3/gtranslate-rs"
+license-file = "LICENSE"
 
 [dependencies]
 reqwest = "0.12.12"
