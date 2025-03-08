@@ -106,7 +106,6 @@ impl Translator {
             opts.target_lang,
             opts.dst_target,
             opts.query
-
         ))
             .header("Referer", "https://translate.google.com/")
             .header("User-Agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36")
@@ -120,11 +119,11 @@ impl Translator {
 
         let body = res.text().await.unwrap();
         let translated= body.split("\"").collect::<Vec<&str>>();
-        
-        if translated.len() < 3 {
+    
+        if translated.len() < 1 {
             Err(Box::new(errors::TranslatorErrors::FailedParsing))
         } else {
-            Ok(translated[3].into())
+            Ok(translated[1].into())
         }
        
     }
