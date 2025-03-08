@@ -1,7 +1,7 @@
 use std::time;
 use reqwest::Method;
 
-pub const API_URL: &'static str = "https://translate.google.com/translate_a/single";
+pub const API_URL: &'static str = "https://translate.google.com/translate_a/t";
 const DST_TARGET: &'static str = "t";
 
 /// Configuration for the translations
@@ -27,7 +27,7 @@ const DST_TARGET: &'static str = "t";
 ///  }
 /// ```
 pub struct TranslateOptions<'a> {
-    pub client: &'a str, // Client, should be 'gtx'
+    pub client: &'a str, // Client, should be 'p'
     pub source_lang: &'a str, // Source language
     pub target_lang: &'a str, // Target language
     pub dst_target: &'a str,  // Destination target, should be 't'
@@ -36,12 +36,12 @@ pub struct TranslateOptions<'a> {
 
 impl Default for TranslateOptions<'_> {
     fn default() -> Self {
-        Self { client: "gtx", source_lang: Default::default(), target_lang: Default::default(), dst_target: &DST_TARGET, query: Default::default() }
+        Self { client: "p", source_lang: Default::default(), target_lang: Default::default(), dst_target: &DST_TARGET, query: Default::default() }
     }
 }
 
 impl TranslateOptions<'_> {
-    /// Creates options using defaults, field ``client`` must be set to ``gtx``
+    /// Creates options using defaults, field ``client`` must be set to ``p``
     pub fn new() -> Self {
         TranslateOptions::default()
     }
@@ -118,13 +118,13 @@ impl Translator {
         }
 
         let body = res.text().await.unwrap();
-        let translated= body.split("\"").collect::<Vec<&str>>();
-    
-        if translated.len() < 1 {
-            Err(Box::new(errors::TranslatorErrors::FailedParsing))
-        } else {
-            Ok(translated[1].into())
+        let parsed_body: serde_json::Value = serde_json::from_str(&body)?;
+        match parsed_body.get(0) {
+            Some(translated) => Ok(translated.to_string().replace("\"", "")),
+            None => Err(Box::new(errors::TranslatorErrors::FailedParsing)),
         }
+
+        
        
     }
 }
@@ -151,9 +151,10 @@ mod tests {
         
         let translator = Translator::new();
         let opts = TranslateOptions::new()
+            .set_client("p")
             .set_source_lang("nl")
             .set_target_lang("tr")
-            .query("hallo ik ga vandaag hardlopen");
+            .query("In computer science, a pointer is an object in many programming languages that stores a memory address. This can be that of another value located in computer memory, or in some cases, that of memory-mapped computer hardware. A pointer references a location in memory, and obtaining the value stored at that location is known as dereferencing the pointer. As an analogy, a page number in a book's index could be considered a pointer to the corresponding page; dereferencing such a pointer would be done by flipping to the page with the given page number and reading the text found on that page. The actual format and content of a pointer variable is dependent on the underlying computer architecture.");
         
         let translated = translator.translate(time::Duration::from_secs(2), opts).await.unwrap();
         println!("translated: {translated}")
